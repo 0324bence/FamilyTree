@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script src="./lib/familytree.js"></script>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div style="width: 100%; height: 700px" id="tree"></div>
+        <!-- https://balkan.app/FamilyTreeJS/Docs/State -->
+        <script>
+            const family = new FamilyTree(document.getElementById("tree"), {
+                nodeMouseClick: FamilyTree.action.none,
+                nodeBinding: {
+                    field_0: "name"
+                },
+                mouseScrool: FamilyTree.action.zoom,
+                enableSearch: false,
+                nodes: [
+                    { id: 1, pids: [2], name: "Amber McKenzie" },
+                    { id: 2, pids: [1], name: "Ava Field" },
+                    { id: 3, mid: 1, fid: 2, name: "Peter Stevens" },
+                    { id: 4, pids: [5, 7], mid: 1, fid: 2, name: "Joe Stevens" },
+                    { id: 5, pids: [4, 8], name: "Jane doe" },
+                    { id: 6, mid: 5, name: "Jane doe4" },
+                    { id: 7, pids: [4], name: "Jane doe2" },
+                    { id: 8, pids: [5], name: "Jane doe3" }
+                ],
+                clinks: [{ from: 1, to: 4, label: "Son", template: "blue" }],
+                nodeMenu: {
+                    edit: { text: "ALma" }
+                }
+            });
+        </script>
+    </body>
+</html>
