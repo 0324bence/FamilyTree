@@ -6,8 +6,8 @@ Create Table IF not exists Orszag (
 Create Table IF not exists Hely (
     iranyitoszam VARCHAR(10) NOT NULL PRIMARY KEY,
     orszag INT NOT NULL,
-    megye VARCHAR(20) NOT NULL,
-    helyseg VARCHAR(20) NOT NULL,
+    megye VARCHAR(40) NOT NULL,
+    helyseg VARCHAR(40) NOT NULL,
     FOREIGN KEY (orszag) REFERENCES Orszag(id)
 );
 
@@ -15,7 +15,7 @@ Create Table IF not exists Halal (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     hely VARCHAR(10),
     ido DATE NOT NULL,
-    ok VARCHAR(50),
+    ok VARCHAR(250),
     FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam)
 );
 
@@ -36,13 +36,9 @@ Create Table IF Not exists Ember (
 
 Create Table If not exists Hazassag (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    ember1 INT NOT NULL,
-    ember2 INT NOT NULL,
     hely VARCHAR(10),
     ido DATE,
-    FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam),
-    FOREIGN KEY (ember1) REFERENCES Ember(id),
-    FOREIGN KEY (ember2) REFERENCES Ember(id)
+    FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam)
 );
 
 Create Table if not exists Hazassag_link (
