@@ -1,11 +1,14 @@
 import knex from "knex";
 import type { Knex } from "knex";
 import { env } from "$env/dynamic/private";
-import { NODE_ENV } from "$env/static/private";
+import { MYSQL } from "$env/static/private";
 
 let conn: Knex;
 
-if (NODE_ENV == "development") {
+console.log(MYSQL);
+
+if (MYSQL) {
+    console.log("dev mode");
     conn = knex({
         client: "mysql",
         connection: {
@@ -19,7 +22,8 @@ if (NODE_ENV == "development") {
 } else {
     conn = knex({
         client: "pg",
-        connection: env.DATABASE_URL
+        connection: env.DATABASE_URL,
+        searchPath: ["knex", "public"]
     });
 }
 
