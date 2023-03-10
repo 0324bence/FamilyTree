@@ -7,7 +7,7 @@ let conn: Knex;
 
 console.log(MYSQL);
 
-if (MYSQL) {
+if (MYSQL == "true") {
     console.log("dev mode");
     conn = knex({
         client: "mysql",
