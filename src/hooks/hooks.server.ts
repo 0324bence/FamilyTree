@@ -21,3 +21,4 @@ await db.execute(
 await db.execute(
     "Alter table Ember ADD FOREIGN KEY (apja) REFERENCES Ember(id), ADD FOREIGN KEY (anyja) REFERENCES Ember(id)"
 );
+console.log("hook");

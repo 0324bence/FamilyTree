@@ -9,6 +9,5 @@ export const GET: RequestHandler = async () => {
     for (const i of res[0]) {
         output += i.kereszt_nev + "\n";
     }
-    console.log(res);
     return new Response(String(output));
 };
