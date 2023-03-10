@@ -1,4 +1,5 @@
-import knex, { Knex } from "knex";
+import knex from "knex";
+import type { Knex } from "knex";
 import { env } from "$env/dynamic/private";
 import { NODE_ENV } from "$env/static/private";
 
