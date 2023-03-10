@@ -1,10 +1,25 @@
-import mysql from "mysql2/promise";
+import knex, { Knex } from "knex";
 import { env } from "$env/dynamic/private";
+import { NODE_ENV } from "$env/static/private";
 
-let conn = await mysql.createConnection(env.DATABASE_URL);
+let conn: Knex;
 
-await conn.execute("Create database if not exists `familytree`");
-
-conn = await mysql.createConnection(env.DATABASE_URL + "/familytree");
+if (NODE_ENV == "development") {
+    conn = knex({
+        client: "mysql",
+        connection: {
+            host: "localhost",
+            port: 3306,
+            user: "root",
+            password: "",
+            database: "familytree"
+        }
+    });
+} else {
+    conn = knex({
+        client: "pg",
+        connection: env.DATABASE_URL
+    });
+}
 
 export default conn;
