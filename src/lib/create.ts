@@ -1,7 +1,8 @@
 import db from "$lib/database";
+import { MYSQL } from "$env/static/private";
 
 async function create() {
-    if (db.client == "mysql") {
+    if (MYSQL == "true") {
         await db.schema.raw(
             "Create Table IF not exists Orszag ( id INT AUTO_INCREMENT NOT NULL PRIMARY KEY, nev VARCHAR(20) NOT NULL )"
         );
