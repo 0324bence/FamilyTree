@@ -5,6 +5,7 @@ import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async () => {
     // const res = await db.select("*").from("ember");
+    // TODO postrge cannot concat
     const res = await db.raw(
         `Select
         ember.id, ember.vezetek_nev, ember.kereszt_nev, CONCAT(szulhely.orszag, ", ", szulhely.megye, ", ", szulhely.iranyitoszam, " ",  szulhely.helyseg) as szül_hely, ember.szül_ido, ember.apja, ember.anyja, ember.foglalkozas, ember.isFerfi,
