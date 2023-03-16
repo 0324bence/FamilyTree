@@ -17,12 +17,14 @@
     let container: HTMLElement;
     let nodes: NodeType[] = [];
 
+    console.log(data);
+
     for (let person of data[0]) {
         nodes.push({
             id: parseInt(person.id),
             pids: [parseInt(person.partner_id)],
             name: person.vezetek_nev + " " + person.kereszt_nev,
-            gender: person.isFerfi ? "male" : "female",
+            gender: person.isferfi ? "male" : "female",
             mid: person.anyja,
             fid: person.apja
         });
@@ -38,11 +40,11 @@
     });
 </script>
 
-<h1>Welcome to TEST</h1>
+<!-- <h1>Welcome to TEST</h1>
 
 <ul>
     {#each data[0] as res}
         <li>[{res.id}] {res.kereszt_nev} {res.vezetek_nev} - {res.foglalkozas} ({res.partner_id})</li>
     {/each}
-</ul>
+</ul> -->
 <div id="container" bind:this={container} />
