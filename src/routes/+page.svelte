@@ -12,6 +12,7 @@
         fid?: number;
         szül_ido: string;
         szül_hely: string;
+        szül_hely_id: string;
         foglalkozas: string;
         display_date: string;
     };
@@ -37,12 +38,17 @@
     FamilyTree.elements.myButton = function (data: any, editElement: any) {
         var id = FamilyTree.elements.generateId();
         return {
-            html: `<button
+            html: `<div style="display:grid; place-items:center;">
+                    <button
                         class="myButton"
-                        onclick="document.dispatchEvent(new Event('${editElement.options[0].triggerEvent}'))"
+                        title="${editElement.options[0].title}"
+                        onclick="document.dispatchEvent(new CustomEvent('${
+                            editElement.options[0].triggerEvent
+                        }', {'detail': ${data[editElement.binding]}}))"
                     >
                     ${editElement.options[0].icon}
-                    </button>`,
+                    </button>
+                </div>`,
             id: id
         };
     };
@@ -60,7 +66,8 @@
                 new Date(person.szül_ido).toISOString().split("T")[0] +
                 (person.halal_ido ? " - " + new Date(person.halal_ido).toISOString().split("T")[0] : ""),
             szül_hely: person.szül_hely,
-            foglalkozas: person.foglalkozas
+            foglalkozas: person.foglalkozas,
+            szül_hely_id: person.szül_hely_id
         });
     }
 
@@ -70,7 +77,7 @@
 
     onMount(() => {
         document.addEventListener(
-            "addNewCountry",
+            "editBrithPlace",
             () => {
                 addCountry();
             },
