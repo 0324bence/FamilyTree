@@ -97,7 +97,6 @@
     }
 
     function ToggleBirthplaceEdit(person: string) {
-        console.log(person);
         currentPersonPlace = person;
         showModal = !showModal;
     }
@@ -176,7 +175,7 @@
 {#if showModal}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div id="modal-container" on:click|self={() => ToggleBirthplaceEdit("")}>
-        <PlaceModal title="Hely" current={currentPersonPlace} />
+        <PlaceModal title="Hely" current={currentPersonPlace} on:close={() => ToggleBirthplaceEdit("")} />
     </div>
 {/if}
 
