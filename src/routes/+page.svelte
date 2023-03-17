@@ -13,16 +13,13 @@
         szül_ido: string;
         szül_hely: string;
         foglalkozas: string;
+        display_date: string;
     };
 
     export let data: PageData;
 
     let container: HTMLElement;
     let nodes: NodeType[] = [];
-
-    const newCountry = new Event("addNewCountry");
-
-    FamilyTree.elements;
 
     FamilyTree.templates.tommy_male.field_0 =
         '<text class="field_0" style="font-size: 20px;" fill="#ffffff" x="125" y="100" text-anchor="middle">{val}</text>';
@@ -59,6 +56,9 @@
             mid: person.anyja,
             fid: person.apja,
             szül_ido: new Date(person.szül_ido).toISOString().split("T")[0],
+            display_date:
+                new Date(person.szül_ido).toISOString().split("T")[0] +
+                (person.halal_ido ? " - " + new Date(person.halal_ido).toISOString().split("T")[0] : ""),
             szül_hely: person.szül_hely,
             foglalkozas: person.foglalkozas
         });
@@ -92,7 +92,7 @@
                 generateElementsFromFields: false,
                 elements: [
                     { type: "textbox", label: "Név", binding: "nev" },
-                    { type: "date", label: "Születési idő", binding: "szül_ido" },
+                    { type: "date", label: "Születési idő", binding: "display_date" },
                     {
                         type: "select",
                         options: [
@@ -143,7 +143,7 @@
     }
     #container {
         width: 100%;
-        height: 100%;
+        height: 100vh;
     }
     :global(.myButton) {
         width: 48px;
