@@ -38,7 +38,7 @@
         const newCountry = prompt("Új ország:");
         if (!newCountry) return;
         console.log(newCountry);
-        fetch("api/places/countries", {
+        await fetch("api/places/countries", {
             method: "POST",
             body: JSON.stringify({
                 nev: newCountry
@@ -55,7 +55,7 @@
             "Biztosan törölni akarja a kiválasztott országot?\nEzzel törli az országban lévő összes települést is!"
         );
         if (!isOK) return;
-        fetch("api/places/countries", {
+        await fetch("api/places/countries", {
             method: "DELETE",
             body: JSON.stringify({
                 id: selectedCountry
@@ -78,6 +78,7 @@
             <div class="bft-input">
                 <label for="country" class="hasval">Ország</label>
                 <select name="country" id="country-select" bind:value={selectedCountry}>
+                    <option value="0" disabled>Válasszon országot</option>
                     {#each countries as country}
                         <option value={country.id}>
                             {country.nev}
