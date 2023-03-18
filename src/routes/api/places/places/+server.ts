@@ -23,6 +23,7 @@ export const POST = (async ({ request }) => {
         ]);
         return new Response("Success");
     } catch (err: any) {
+        console.log(err);
         throw error(409, err.message);
     }
 }) satisfies RequestHandler;
@@ -31,15 +32,15 @@ export const DELETE = (async ({ request }) => {
     const body = await request.json();
     try {
         await db.raw(`
-            UPDATE ember SET szül_hely = NULL WHERE szül_hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+            UPDATE ember SET szül_hely = NULL WHERE szül_hely = '${body.iranyitoszam}'
         `);
         await db.raw(`
-            UPDATE halal SET hely = NULL WHERE hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+            UPDATE halal SET hely = NULL WHERE hely = '${body.iranyitoszam}'
         `);
         await db.raw(`
-            UPDATE hazassag SET hely = NULL WHERE hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+            UPDATE hazassag SET hely = NULL WHERE hely = '${body.iranyitoszam}'
         `);
-        await db("hely").where("orszag", body.id).del();
+        await db("hely").where("iranyitoszam", body.iranyitoszam).del();
         return new Response("Success");
     } catch (err: any) {
         console.log(err);
