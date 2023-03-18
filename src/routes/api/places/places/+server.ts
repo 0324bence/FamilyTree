@@ -3,8 +3,11 @@ import db from "$lib/database";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async () => {
-    const res = await db.select("*").from("hely");
-    return json(res);
+    const places = await db.select("*").from("hely");
+    for (let i = 0; i < places.length; i++) {
+        places[i].display = places[i].megye + ", " + places[i].iranyitoszam + " " + places[i].helyseg;
+    }
+    return json(places);
 };
 
 export const POST = (async ({ request }) => {
