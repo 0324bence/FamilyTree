@@ -3,6 +3,8 @@
     import { createEventDispatcher, onMount } from "svelte";
     export let title: string;
     export let current: string;
+    export let apiPath: string;
+    export let currentPerson: string;
 
     const dispatch = createEventDispatcher();
 
@@ -132,6 +134,17 @@
         selectedPlace = "0";
         // dispatch("close");
     }
+
+    async function submit() {
+        await fetch(apiPath, {
+            method: "PATCH",
+            body: JSON.stringify({
+                id: currentPerson,
+                hely: selectedPlace
+            })
+        });
+        dispatch("close");
+    }
 </script>
 
 <div id="modal" class="bft-light" transition:fly={{ y: 20, duration: 100 }}>
@@ -213,6 +226,12 @@
                 ></button
             >
         </div>
+        <div class="big-button red">
+            <button on:click={() => dispatch("close")}>Mégsem</button>
+        </div>
+        <div class="big-button blue">
+            <button on:click={submit}>Mentés</button>
+        </div>
     </form>
 </div>
 
@@ -225,9 +244,9 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 15px;
+        border-radius: 5px;
         width: 25rem;
-        height: 30rem;
+        /* height: 30rem; */
         font-family: "Roboto", sans-serif;
         display: flex;
         flex-direction: column;
@@ -258,5 +277,27 @@
     }
     .myButton.red:hover {
         background-color: hsl(0, 100%, 45%);
+    }
+    .big-button {
+        flex: 1 0 21%;
+    }
+
+    .big-button button {
+        width: 100%;
+        height: 100%;
+        border: 1px solid black;
+        color: white;
+    }
+    .big-button.blue button {
+        background-color: hsl(240, 100%, 30%);
+    }
+    .big-button.blue button:hover {
+        background-color: hsl(240, 100%, 40%);
+    }
+    .big-button.red button {
+        background-color: hsl(0, 100%, 30%);
+    }
+    .big-button.red button:hover {
+        background-color: hsl(0, 100%, 40%);
     }
 </style>
