@@ -32,6 +32,16 @@ export const POST = (async ({ request }) => {
 export const DELETE = (async ({ request }) => {
     const body = await request.json();
     try {
+        await db.raw(`
+            UPDATE ember SET szül_hely = NULL WHERE szül_hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+        `);
+        await db.raw(`
+            UPDATE halal SET hely = NULL WHERE hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+        `);
+        await db.raw(`
+            UPDATE hazassag SET hely = NULL WHERE hely = ANY (Select iranyitoszam from hely where orszag = ${body.id})
+        `);
+        await db("hely").where("orszag", body.id).del();
         await db("orszag").where("id", body.id).del();
         // await db("hely").insert([
         //     {
@@ -43,6 +53,7 @@ export const DELETE = (async ({ request }) => {
         // ]);
         return new Response("Success");
     } catch (err: any) {
+        console.log(err);
         throw error(409, err.message);
     }
 }) satisfies RequestHandler;
