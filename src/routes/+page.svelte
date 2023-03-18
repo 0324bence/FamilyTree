@@ -7,8 +7,11 @@
     type NodeType = {
         id: number;
         pids?: number[];
-        nev: string;
+        display_nev: string;
+        vezetek_nev: string;
+        kereszt_nev: string;
         gender: "female" | "male";
+        gender_display: string;
         mid?: number;
         fid?: number;
         szül_ido: string;
@@ -83,8 +86,11 @@
         nodes.push({
             id: parseInt(person.id),
             pids: person.partner_id ? [parseInt(person.partner_id)] : undefined,
-            nev: person.vezetek_nev + " " + person.kereszt_nev,
+            display_nev: person.vezetek_nev + " " + person.kereszt_nev,
+            kereszt_nev: person.kereszt_nev,
+            vezetek_nev: person.vezetek_nev,
             gender: person.isferfi ? "male" : "female",
+            gender_display: person.isferfi ? "Férfi" : "Nő",
             mid: person.anyja,
             fid: person.apja,
             szül_ido: new Date(person.szül_ido).toISOString().split("T")[0],
@@ -128,7 +134,18 @@
                 addMore: undefined,
                 generateElementsFromFields: false,
                 elements: [
-                    { type: "textbox", label: "Név", binding: "nev", vlidators: { required: "nem hagyható üresen" } },
+                    {
+                        type: "textbox",
+                        label: "Vezetéknév",
+                        binding: "vezetek_nev",
+                        vlidators: { required: "nem hagyható üresen" }
+                    },
+                    {
+                        type: "textbox",
+                        label: "Keresztnév",
+                        binding: "kereszt_nev",
+                        vlidators: { required: "nem hagyható üresen" }
+                    },
                     {
                         type: "date",
                         label: "Születési idő",
@@ -149,13 +166,9 @@
                         binding: "szül_hely_id"
                     },
                     {
-                        type: "select",
-                        options: [
-                            { value: "male", text: "Férfi" },
-                            { value: "female", text: "Nő" }
-                        ],
+                        type: "disabledTextfield",
                         label: "Nem",
-                        binding: "gender"
+                        binding: "gender_display"
                     },
                     { type: "textbox", label: "Foglalkozás", binding: "foglalkozas" }
 
@@ -164,11 +177,27 @@
                 titleBinding: "nev"
             },
             nodeBinding: {
-                field_0: "nev",
+                field_0: "display_nev",
                 field_1: "display_date",
                 field_2: "foglalkozas"
             },
             nodeMouseClick: FamilyTree.action.edit
+        });
+        family.on("update", (tree, updateData) => {
+            const node = updateData.updateNodesData[0];
+            console.log(updateData.updateNodesData[0], nodes);
+            if (nodes.some(i => i.id == node.id)) {
+                console.log(updateData.updateNodesData[0]);
+                fetch("api/people", {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        id: node.id,
+                        vezetek_nev: node.vezetek_nev,
+                        kereszt_nev: node.kereszt_nev,
+                        foglalkozas: node.foglalkozas
+                    })
+                }).then(() => document.location.reload());
+            }
         });
     });
 </script>

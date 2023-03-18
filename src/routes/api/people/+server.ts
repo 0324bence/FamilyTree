@@ -22,3 +22,16 @@ export const GET: RequestHandler = async () => {
     );
     return json(res);
 };
+
+export const PATCH = (async ({ request }) => {
+    const body = await request.json();
+    await db("ember")
+        .where("id", body.id)
+        .update({
+            vezetek_nev: body.vezetek_nev,
+            kereszt_nev: body.kereszt_nev,
+            foglalkozas: body.foglalkozas || "Munkanélküli"
+        });
+
+    return new Response("Success");
+}) satisfies RequestHandler;
