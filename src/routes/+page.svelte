@@ -52,7 +52,7 @@
                         title="${editElement.options[0].title}"
                         onclick="document.dispatchEvent(new CustomEvent('${
                             editElement.options[0].triggerEvent
-                        }', {'detail': [${data[editElement.binding]}, ${data[editElement.options[0].personID]}]}))"
+                        }', {'detail': ['${data[editElement.binding]}', '${data[editElement.options[0].personID]}']}))"
                     >
                     ${editElement.options[0].icon}
                     </button>
@@ -218,7 +218,10 @@
             title="Hely"
             current={currentPersonPlace}
             {currentPerson}
-            on:close={() => ToggleBirthplaceEdit("", "")}
+            on:close={() => {
+                ToggleBirthplaceEdit("", "");
+                document.location.reload();
+            }}
         />
     </div>
 {/if}
