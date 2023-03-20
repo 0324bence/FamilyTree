@@ -3,6 +3,7 @@
     import FamilyTree from "@balkangraph/familytree.js";
     import { onMount } from "svelte";
     import PlaceModal from "../components/PlaceModal.svelte";
+    import NewPersonModal from "../components/NewPersonModal.svelte";
 
     type NodeType = {
         id: number;
@@ -28,7 +29,10 @@
     let currentPerson = "";
 
     let container: HTMLElement;
+    let originalNodes: NodeType[] = [];
     let nodes: NodeType[] = [];
+
+    let showNewPersonModal = false;
 
     FamilyTree.templates.tommy_male.field_0 =
         '<text class="field_0" style="font-size: 20px;" fill="#ffffff" x="125" y="100" text-anchor="middle">{val}</text>';
@@ -83,7 +87,7 @@
     };
 
     for (let person of data[0]) {
-        nodes.push({
+        originalNodes.push({
             id: parseInt(person.id),
             pids: person.partner_id ? [parseInt(person.partner_id)] : undefined,
             display_nev: person.vezetek_nev + " " + person.kereszt_nev,
@@ -120,7 +124,7 @@
         );
 
         const family = new FamilyTree(container, {
-            nodes: nodes,
+            nodes: originalNodes,
             nodeTreeMenu: true,
             editForm: {
                 buttons: {
@@ -183,20 +187,35 @@
             },
             nodeMouseClick: FamilyTree.action.edit
         });
-        family.on("update", (tree, updateData) => {
-            const node = updateData.updateNodesData[0];
-            console.log(updateData.updateNodesData[0], nodes);
-            if (nodes.some(i => i.id == node.id)) {
-                console.log(updateData.updateNodesData[0]);
-                fetch("api/people", {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        id: node.id,
-                        vezetek_nev: node.vezetek_nev,
-                        kereszt_nev: node.kereszt_nev,
-                        foglalkozas: node.foglalkozas
-                    })
-                }).then(() => document.location.reload());
+        family.on("update", (tree, updateData, arg1, arg2) => {
+            console.log(arg1, arg2);
+            // console.log(updateData.updateNodesData);
+            if (updateData.removeNodeId) {
+                console.log("remove");
+                return;
+            }
+            if ((updateData.addNodesData as Array<any>).length > 0) {
+                console.log(updateData.addNodesData);
+                return;
+            }
+            if ((updateData.updateNodesData as Array<any>).length == 1) {
+                const node = updateData.updateNodesData[0];
+                if (isNaN(node.id)) {
+                    console.log("need to insert");
+                    return;
+                }
+                if (nodes.some(i => i.id == node.id)) {
+                    console.log(updateData.updateNodesData[0]);
+                    fetch("api/people", {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            id: node.id,
+                            vezetek_nev: node.vezetek_nev,
+                            kereszt_nev: node.kereszt_nev,
+                            foglalkozas: node.foglalkozas
+                        })
+                    }).then(/* () => document.location.reload() */);
+                }
             }
         });
     });
@@ -225,8 +244,56 @@
         />
     </div>
 {/if}
+{#if showNewPersonModal}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div
+        id="modal-container"
+        on:click|self={() => {
+            showNewPersonModal = false;
+        }}
+    >
+        <NewPersonModal
+            on:close={() => {
+                showNewPersonModal = false;
+                document.location.reload();
+            }}
+        />
+    </div>
+{/if}
+
+<div class="button-container">
+    <button
+        on:click={() => {
+            showNewPersonModal = true;
+        }}
+        ><svg width="24" height="24" fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+            ><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
+                d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+            /></svg
+        ></button
+    >
+</div>
 
 <style global>
+    .button-container {
+        position: absolute;
+        z-index: 1000;
+        width: 4rem;
+        height: 4rem;
+        margin: 2rem;
+        left: 0;
+        bottom: 0;
+    }
+    .button-container button {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 50%;
+        background-color: blue;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+    }
     :global(*) {
         margin: 0;
         padding: 0;

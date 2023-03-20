@@ -35,3 +35,19 @@ export const PATCH = (async ({ request }) => {
 
     return new Response("Success");
 }) satisfies RequestHandler;
+
+export const POST = (async ({ request }) => {
+    const body = await request.json();
+    // await db("ember")
+    //     .where("id", body.id)
+    //     .update({
+    //         vezetek_nev: body.vezetek_nev,
+    //         kereszt_nev: body.kereszt_nev,
+    //         foglalkozas: body.foglalkozas || "Munkanélküli"
+    //     });
+    await db("ember").insert({
+        ...body
+    });
+
+    return new Response("Success");
+}) satisfies RequestHandler;

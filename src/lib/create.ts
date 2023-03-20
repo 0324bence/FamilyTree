@@ -13,7 +13,7 @@ async function create() {
             "Create Table IF not exists Halal (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,hely VARCHAR(10),ido DATE NOT NULL,ok VARCHAR(250),FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam))"
         );
         await db.schema.raw(
-            "Create Table IF Not exists Ember (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,kereszt_nev VARCHAR(20) NOT NULL,vezetek_nev VARCHAR(20) NOT NULL,szül_hely VARCHAR(10),szül_ido DATE NOT NULL,apja INT,anyja INT,foglalkozas VARCHAR(20) NOT NULL DEFAULT 'Munkanélküli',isFerfi BOOLEAN,halal INT,FOREIGN KEY (szül_hely) REFERENCES Hely(iranyitoszam),FOREIGN KEY (halal) REFERENCES Halal(id))"
+            "Create Table IF Not exists Ember (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,kereszt_nev VARCHAR(20) NOT NULL,vezetek_nev VARCHAR(20) NOT NULL,szül_hely VARCHAR(10),szül_ido DATE NOT NULL,apja INT,anyja INT, foglalkozas VARCHAR(20) NOT NULL DEFAULT 'Munkanélküli',isFerfi BOOLEAN,halal INT,FOREIGN KEY (szül_hely) REFERENCES Hely(iranyitoszam),FOREIGN KEY (halal) REFERENCES Halal(id))"
         );
         await db.schema.raw(
             "Create Table If not exists Hazassag (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,hely VARCHAR(10),ido DATE,FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam))"
