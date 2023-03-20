@@ -51,3 +51,20 @@ export const POST = (async ({ request }) => {
 
     return new Response("Success");
 }) satisfies RequestHandler;
+
+export const DELETE = (async ({ request }) => {
+    const body = await request.json();
+    // await db("ember")
+    //     .where("id", body.id)
+    //     .update({
+    //         vezetek_nev: body.vezetek_nev,
+    //         kereszt_nev: body.kereszt_nev,
+    //         foglalkozas: body.foglalkozas || "Munkanélküli"
+    //     });
+    await db("ember").where("apja", body.id).update({ apja: null });
+    await db("ember").where("anyja", body.id).update({ anyja: null });
+    await db("hazassag_link").where("ember", body.id).del();
+    await db("ember").where("id", body.id).del();
+
+    return new Response("Success");
+}) satisfies RequestHandler;

@@ -30,7 +30,7 @@
 
     let container: HTMLElement;
     let originalNodes: NodeType[] = [];
-    let nodes: NodeType[] = [];
+    // let nodes: NodeType[] = originalNodes;
 
     let showNewPersonModal = false;
 
@@ -125,7 +125,6 @@
 
         const family = new FamilyTree(container, {
             nodes: originalNodes,
-            nodeTreeMenu: true,
             editForm: {
                 buttons: {
                     remove: {
@@ -189,22 +188,23 @@
         });
         family.on("update", (tree, updateData, arg1, arg2) => {
             console.log(arg1, arg2);
-            // console.log(updateData.updateNodesData);
+            console.log(updateData);
             if (updateData.removeNodeId) {
                 console.log("remove");
-                return;
-            }
-            if ((updateData.addNodesData as Array<any>).length > 0) {
-                console.log(updateData.addNodesData);
+                fetch("api/people", {
+                    method: "DELETE",
+                    body: JSON.stringify({
+                        id: updateData.removeNodeId
+                    })
+                }).then(/* () => document.location.reload() */);
                 return;
             }
             if ((updateData.updateNodesData as Array<any>).length == 1) {
+                console.log("asd");
                 const node = updateData.updateNodesData[0];
-                if (isNaN(node.id)) {
-                    console.log("need to insert");
-                    return;
-                }
-                if (nodes.some(i => i.id == node.id)) {
+                if (originalNodes.some(i => i.id == node.id)) {
+                    console.log("asd");
+
                     console.log(updateData.updateNodesData[0]);
                     fetch("api/people", {
                         method: "PATCH",
@@ -214,7 +214,7 @@
                             kereszt_nev: node.kereszt_nev,
                             foglalkozas: node.foglalkozas
                         })
-                    }).then(/* () => document.location.reload() */);
+                    }).then(() => document.location.reload());
                 }
             }
         });
