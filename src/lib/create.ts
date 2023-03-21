@@ -41,9 +41,6 @@ async function create() {
         await db.schema.raw(
             "Create Table if not exists Hazassag_link (ember INT NOT NULL,hazassag INT NOT NULL,FOREIGN KEY (ember) REFERENCES Ember(id),FOREIGN KEY (hazassag) REFERENCES Hazassag(id))"
         );
-        await db.schema.raw(
-            "Alter table Ember ADD FOREIGN KEY (apja) REFERENCES Ember(id), ADD FOREIGN KEY (anyja) REFERENCES Ember(id)"
-        );
     }
 }
 
