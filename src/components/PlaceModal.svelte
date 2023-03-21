@@ -136,6 +136,7 @@
     }
 
     async function submit() {
+        console.log(apiPath, currentPerson, selectedPlace);
         await fetch(apiPath, {
             method: "PATCH",
             body: JSON.stringify({

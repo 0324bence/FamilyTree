@@ -11,14 +11,6 @@ Create Table IF not exists Hely (
     FOREIGN KEY (orszag) REFERENCES Orszag(id)
 );
 
-Create Table IF not exists Halal (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    hely VARCHAR(10),
-    ido DATE NOT NULL,
-    ok VARCHAR(250),
-    FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam)
-);
-
 Create Table IF Not exists Ember (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     kereszt_nev VARCHAR(20) NOT NULL,
@@ -29,9 +21,11 @@ Create Table IF Not exists Ember (
     anyja INT,
     foglalkozas VARCHAR(20) NOT NULL DEFAULT "Munkanélküli",
     isFerfi BOOLEAN,
-    halal INT,
-    FOREIGN KEY (szül_hely) REFERENCES Hely(iranyitoszam),
-    FOREIGN KEY (halal) REFERENCES Halal(id)
+    halal_hely VARCHAR(10),
+    halal_ido DATE NOT NULL,
+    halal_ok VARCHAR(250),
+    FOREIGN KEY (halal_hely) REFERENCES Hely(iranyitoszam),
+    FOREIGN KEY (szül_hely) REFERENCES Hely(iranyitoszam)
 );
 
 Create Table If not exists Hazassag (

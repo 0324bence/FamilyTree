@@ -11,9 +11,15 @@
     let gender = "0";
     let dad: string = "0";
     let mom: string = "0";
+    let children = ["0"];
 
     onMount(async () => {
-        data = (await fetch("api/people").then(i => i.json())).rows;
+        const res = await fetch("api/people").then(i => i.json());
+        if (res.rows) {
+            data = res.rows;
+        } else {
+            data = res[0];
+        }
         console.log(data);
     });
 
@@ -28,8 +34,31 @@
                 apja: dad != "0" ? dad : undefined,
                 anyja: mom != "0" ? mom : undefined
             })
-        });
+        })
+            .then(res => res.text())
+            .then(async res => {
+                for (let child of children) {
+                    console.log(res);
+                    if (child == "0") continue;
+                    console.log(child);
+                    await fetch("api/people", {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            id: child.toString(),
+                            apja: gender == "1" ? res : undefined,
+                            anyja: gender == "0" ? res : undefined
+                        })
+                    });
+                }
+            });
         dispatch("close");
+    }
+
+    function addChild() {
+        children.push("0");
+        const temp = children;
+        temp.push("0");
+        children = temp;
     }
 </script>
 
@@ -91,6 +120,24 @@
                 </select>
             </div>
         </div>
+        {#each children as child, index}
+            <div class="input-area bft-form-field">
+                <div class="bft-input">
+                    <label for={"child-" + index} class="hasval">Gyerek</label>
+                    <select name={"child-" + index} id={"child-" + index} bind:value={children[index]}>
+                        <option value="0">Senki</option>
+                        {#each data as person}
+                            {#if !children.some(i => person.id == i) || child == person.id}
+                                <option value={person.id}>{person.vezetek_nev + " " + person.kereszt_nev}</option>
+                            {/if}
+                        {/each}
+                    </select>
+                </div>
+            </div>
+        {/each}
+        <div class="big-button bigger green">
+            <button on:click|preventDefault={addChild}>Új gyerek hozzáadása</button>
+        </div>
         <div class="big-button red">
             <button on:click={() => dispatch("close")}>Mégsem</button>
         </div>
@@ -105,10 +152,10 @@
 
     #modal {
         background-color: white;
-        position: absolute;
+        /* position: absolute;
         left: 50%;
         top: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); */
         border-radius: 5px;
         width: 25rem;
         /* height: 30rem; */
@@ -164,5 +211,15 @@
     }
     .big-button.red button:hover {
         background-color: hsl(0, 100%, 40%);
+    }
+
+    .big-button.green button {
+        background-color: hsl(131, 100%, 30%);
+    }
+    .big-button.green button:hover {
+        background-color: hsl(131, 100%, 40%);
+    }
+    .bigger {
+        flex: 1 0 90%;
     }
 </style>

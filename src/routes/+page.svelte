@@ -20,11 +20,16 @@
         szül_hely_id: string;
         foglalkozas: string;
         display_date: string;
+        halal_hely: string;
+        halal_hely_id: string;
+        halal_ido: string;
+        halal_ok: string;
     };
 
     export let data: PageData;
 
     let showModal = false;
+    let showDeathModal = false;
     let currentPersonPlace = "";
     let currentPerson = "";
 
@@ -87,6 +92,7 @@
     };
 
     for (let person of data[0]) {
+        if (person.isFerfi) person.isferfi = person.isFerfi;
         originalNodes.push({
             id: parseInt(person.id),
             pids: person.partner_id ? [parseInt(person.partner_id)] : undefined,
@@ -100,10 +106,19 @@
             szül_ido: new Date(person.szül_ido).toISOString().split("T")[0],
             display_date:
                 new Date(person.szül_ido).toISOString().split("T")[0] +
-                (person.halal_ido ? " - " + new Date(person.halal_ido).toISOString().split("T")[0] : ""),
+                (person.halal_ido != "0000-00-00"
+                    ? " - " + new Date(person.halal_ido).toISOString().split("T")[0]
+                    : ""),
             szül_hely: person.szül_hely,
             foglalkozas: person.foglalkozas,
-            szül_hely_id: person.szül_hely_id
+            szül_hely_id: person.szül_hely_id,
+            halal_hely: person.halal_hely,
+            halal_hely_id: person.halal_hely_id,
+            halal_ido:
+                person.halal_ido != "0000-00-00"
+                    ? new Date(person.halal_ido).toISOString().split("T")[0]
+                    : "00-00-0000",
+            halal_ok: person.halal_ok
         });
     }
 
@@ -114,11 +129,25 @@
         showModal = !showModal;
     }
 
+    function ToggleDeathplaceEdit(place: string, person: string) {
+        console.log(place, person);
+        currentPerson = person;
+        currentPersonPlace = place;
+        showDeathModal = !showDeathModal;
+    }
+
     onMount(() => {
         document.addEventListener(
             "editBrithPlace",
             (e: any) => {
                 ToggleBirthplaceEdit(e.detail[0], e.detail[1]);
+            },
+            false
+        );
+        document.addEventListener(
+            "editDeathPlace",
+            (e: any) => {
+                ToggleDeathplaceEdit(e.detail[0], e.detail[1]);
             },
             false
         );
@@ -173,8 +202,22 @@
                         label: "Nem",
                         binding: "gender_display"
                     },
-                    { type: "textbox", label: "Foglalkozás", binding: "foglalkozas" }
-
+                    { type: "textbox", label: "Foglalkozás", binding: "foglalkozas" },
+                    { type: "date", label: "Halál ideje", binding: "halal_ido" },
+                    { type: "textbox", label: "Halál oka", binding: "halal_ok" },
+                    { type: "disabledTextfield", label: "Halál helye", binding: "halal_hely" },
+                    {
+                        type: "myButton",
+                        options: [
+                            {
+                                title: "Módosítás",
+                                personID: "id",
+                                triggerEvent: "editDeathPlace",
+                                icon: `<svg width="25" height="25" fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>`
+                            }
+                        ],
+                        binding: "halal_hely_id"
+                    }
                     // { type: "textbox", label: "Foglalkozás", binding: "foglalkozas" }
                 ],
                 titleBinding: "nev"
@@ -200,11 +243,8 @@
                 return;
             }
             if ((updateData.updateNodesData as Array<any>).length == 1) {
-                console.log("asd");
                 const node = updateData.updateNodesData[0];
                 if (originalNodes.some(i => i.id == node.id)) {
-                    console.log("asd");
-
                     console.log(updateData.updateNodesData[0]);
                     fetch("api/people", {
                         method: "PATCH",
@@ -212,7 +252,10 @@
                             id: node.id,
                             vezetek_nev: node.vezetek_nev,
                             kereszt_nev: node.kereszt_nev,
-                            foglalkozas: node.foglalkozas
+                            foglalkozas: node.foglalkozas || "Munkanélküli",
+                            szül_ido: node.szül_ido,
+                            halal_ido: node.halal_ido,
+                            halal_ok: node.halal_ok
                         })
                     }).then(() => document.location.reload());
                 }
@@ -239,6 +282,21 @@
             {currentPerson}
             on:close={() => {
                 ToggleBirthplaceEdit("", "");
+                // document.location.reload();
+            }}
+        />
+    </div>
+{/if}
+{#if showDeathModal}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div id="modal-container" on:click|self={() => ToggleDeathplaceEdit("", "")}>
+        <PlaceModal
+            apiPath="api/people/deathplace"
+            title="Hely"
+            current={currentPersonPlace}
+            {currentPerson}
+            on:close={() => {
+                ToggleDeathplaceEdit("", "");
                 document.location.reload();
             }}
         />
@@ -321,10 +379,12 @@
         left: 0;
         top: 0;
         width: 100%;
-        height: 100vh;
+        min-height: 100vh;
         background-color: rgba(0, 0, 0, 0.5);
-        display: grid;
-        place-items: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         z-index: 10;
     }
 </style>
