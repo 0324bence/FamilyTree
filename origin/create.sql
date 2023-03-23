@@ -22,7 +22,7 @@ Create Table IF Not exists Ember (
     foglalkozas VARCHAR(20) NOT NULL DEFAULT "Munkanélküli",
     isFerfi BOOLEAN,
     halal_hely VARCHAR(10),
-    halal_ido DATE NOT NULL,
+    halal_ido DATE,
     halal_ok VARCHAR(250),
     FOREIGN KEY (halal_hely) REFERENCES Hely(iranyitoszam),
     FOREIGN KEY (szül_hely) REFERENCES Hely(iranyitoszam)

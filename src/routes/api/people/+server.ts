@@ -44,7 +44,7 @@ export const POST = (async ({ request }) => {
     //         kereszt_nev: body.kereszt_nev,
     //         foglalkozas: body.foglalkozas || "Munkanélküli"
     //     });
-    const newPerson = await db("ember").insert(
+    const newPerson: any = await db("ember").insert(
         {
             ...body
         },
