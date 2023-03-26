@@ -27,22 +27,27 @@ export const GET: RequestHandler = async ({ url }) => {
             GROUP BY ember.id, hlink.id, hazassag.id, hazassaghely.iranyitoszam
             order by ember.id`
     );
-
-    return json(res.rows);
+    if (res.rows) {
+        return json(res.rows);
+    } else {
+        return json(res);
+    }
 };
 
-// TODO post
 export const POST = (async ({ request }) => {
     const body = await request.json();
     try {
-        await db("hely").insert([
+        await db("hazassag_link").insert([
             {
-                iranyitoszam: body.iranyitoszam,
-                orszag: body.orszag,
-                megye: body.megye,
-                helyseg: body.helyseg
+                ember: body.ember,
+                hazassag: body.hazassag
             }
         ]);
+        await db.raw(
+            `Delete from hazassag where (
+                SELECT COUNT(*) from hazassag_link where hazassag.id = hazassag_link.hazassag
+            ) = 0`
+        );
         return new Response("Success");
     } catch (err: any) {
         console.log(err);
@@ -50,20 +55,15 @@ export const POST = (async ({ request }) => {
     }
 }) satisfies RequestHandler;
 
-//TODO delete
 export const DELETE = (async ({ request }) => {
     const body = await request.json();
     try {
-        await db.raw(`
-            UPDATE ember SET szül_hely = NULL WHERE szül_hely = '${body.iranyitoszam}'
-        `);
-        await db.raw(`
-            UPDATE halal SET hely = NULL WHERE hely = '${body.iranyitoszam}'
-        `);
-        await db.raw(`
-            UPDATE hazassag SET hely = NULL WHERE hely = '${body.iranyitoszam}'
-        `);
-        await db("hely").where("iranyitoszam", body.iranyitoszam).del();
+        await db("hazassag_link").where("ember", body.ember).andWhere("hazassag", body.id).del();
+        await db.raw(
+            `Delete from hazassag where (
+                SELECT COUNT(*) from hazassag_link where hazassag.id = hazassag_link.hazassag
+            ) = 0`
+        );
         return new Response("Success");
     } catch (err: any) {
         console.log(err);

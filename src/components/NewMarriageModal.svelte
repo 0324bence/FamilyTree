@@ -1,10 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { createEventDispatcher, onMount } from "svelte";
-    export let title: string;
-    export let current: string;
-    export let apiPath: string;
-    export let currentPerson: string;
 
     const dispatch = createEventDispatcher();
 
@@ -16,25 +12,26 @@
     let places = data.places;
     let userCountry = "0";
     let selectedCountry = userCountry;
-    let selectedPlace = (current || "0").toString();
+    let selectedPlace = "0";
+    let ido = "";
 
     $: {
         selectedCountry = userCountry;
     }
 
     $: {
-        if (selectedCountry != userCountry) {
-            selectedPlace = "0";
-        } else {
-            selectedPlace = (current || "0").toString();
-        }
+        // if (selectedCountry != userCountry) {
+        //     selectedPlace = "0";
+        // } else {
+        //     selectedPlace = "0"
+        // }
     }
 
     async function getData() {
         console.log("data got");
         const data = await fetch("api/places").then(res => res.json());
         for (let i of data.places) {
-            if (i.iranyitoszam == current) {
+            if (i.iranyitoszam == "0") {
                 userCountry = i.orszag;
                 break;
             }
@@ -136,12 +133,11 @@
     }
 
     async function submit() {
-        console.log(apiPath, currentPerson, selectedPlace);
-        await fetch(apiPath, {
-            method: "PATCH",
+        await fetch("api/marriage", {
+            method: "POST",
             body: JSON.stringify({
-                id: currentPerson,
-                hely: selectedPlace
+                ido: ido,
+                hely: selectedPlace == "0" ? undefined : selectedPlace
             })
         });
         dispatch("close");
@@ -150,7 +146,7 @@
 
 <div id="modal" class="bft-light" transition:fly={{ y: 20, duration: 100 }}>
     <div id="header">
-        <h1>{title}</h1>
+        <h1>Házasság hozzáadás</h1>
     </div>
     <form class="bft-form-fieldset">
         <div class="input-area bft-form-field">
@@ -195,6 +191,7 @@
                         <option value="0" disabled>Válasszon országot...</option>
                     {:else}
                         <option value="0" selected disabled>Válasszon helységet...</option>
+                        <option value="0" selected>Sehol.</option>
                         {#each places as place}
                             {#if place.orszag == selectedCountry}
                                 <option value={place.iranyitoszam}>
@@ -226,6 +223,12 @@
                     /></svg
                 ></button
             >
+        </div>
+        <div class="input-area bft-form-field">
+            <div class="bft-input">
+                <label for="szül_ido" class="hasval">Házasságkötés ideje</label>
+                <input type="date" name="szül_ido" id="szül_ido" bind:value={ido} />
+            </div>
         </div>
         <div class="big-button red">
             <button on:click={() => dispatch("close")}>Mégsem</button>

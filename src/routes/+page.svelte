@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import PlaceModal from "../components/PlaceModal.svelte";
     import NewPersonModal from "../components/NewPersonModal.svelte";
+    import MarriagesModal from "../components/MarriagesModal.svelte";
 
     type NodeType = {
         id: number;
@@ -25,13 +26,13 @@
         halal_ido: string;
         halal_ok: string;
         partner_count: string;
-        hazassag_id: string;
     };
 
     export let data: PageData;
 
     let showModal = false;
     let showDeathModal = false;
+    let showMarriageModal = false;
     let currentPersonData = "";
     let currentPerson = "";
 
@@ -56,6 +57,7 @@
 
     FamilyTree.elements.myButton = function (data: any, editElement: any) {
         var id = FamilyTree.elements.generateId();
+        console.log(data);
         return {
             html: `<div style="display:grid; place-items:center;">
                     <button
@@ -111,7 +113,7 @@
         console.log(marriage, person);
         currentPerson = person;
         currentPersonData = marriage;
-        showDeathModal = !showDeathModal;
+        showMarriageModal = !showMarriageModal;
     }
 
     onMount(async () => {
@@ -122,11 +124,9 @@
             if (partners) {
                 partnerIds = partners.map((i: any) => i.id);
             }
-            console.log(person);
+            //console.log(person);
             originalNodes.push({
                 id: parseInt(person.id),
-
-                // TODO Make separate request api for marriages
                 pids: partnerIds,
                 display_nev: person.vezetek_nev + " " + person.kereszt_nev,
                 kereszt_nev: person.kereszt_nev,
@@ -151,8 +151,7 @@
                         ? new Date(person.halal_ido).toISOString().split("T")[0]
                         : "00-00-0000",
                 halal_ok: person.halal_ok,
-                partner_count: person.partners + " db",
-                hazassag_id: person.hazzasag_id
+                partner_count: (partners?.length || "0") + " db"
             });
         }
         document.addEventListener(
@@ -320,7 +319,7 @@
             {currentPerson}
             on:close={() => {
                 ToggleBirthplaceEdit("", "");
-                // document.location.reload();
+                document.location.reload();
             }}
         />
     </div>
@@ -335,6 +334,18 @@
             {currentPerson}
             on:close={() => {
                 ToggleDeathplaceEdit("", "");
+                document.location.reload();
+            }}
+        />
+    </div>
+{/if}
+{#if showMarriageModal}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div id="modal-container" on:click|self={() => ToggleMarriageEdit("", "")}>
+        <MarriagesModal
+            {currentPerson}
+            on:close={() => {
+                ToggleMarriageEdit("", "");
                 document.location.reload();
             }}
         />
@@ -420,7 +431,8 @@
         min-height: 100vh;
         background-color: rgba(0, 0, 0, 0.5);
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        gap: 4rem;
         align-items: center;
         justify-content: center;
         z-index: 10;
