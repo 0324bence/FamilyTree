@@ -16,7 +16,7 @@ async function create() {
             "Create Table If not exists Hazassag (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,hely VARCHAR(10),ido DATE,FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam))"
         );
         await db.schema.raw(
-            "Create Table if not exists Hazassag_link (ember INT NOT NULL,hazassag INT NOT NULL,FOREIGN KEY (ember) REFERENCES Ember(id),FOREIGN KEY (hazassag) REFERENCES Hazassag(id))"
+            "Create Table if not exists Hazassag_link (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,ember INT NOT NULL,hazassag INT NOT NULL,FOREIGN KEY (ember) REFERENCES Ember(id),FOREIGN KEY (hazassag) REFERENCES Hazassag(id))"
         );
     } else {
         console.log("Not SQL");
@@ -33,7 +33,7 @@ async function create() {
             "Create Table If not exists Hazassag (id SERIAL NOT NULL PRIMARY KEY,hely VARCHAR(10),ido DATE,FOREIGN KEY (hely) REFERENCES Hely(iranyitoszam))"
         );
         await db.schema.raw(
-            "Create Table if not exists Hazassag_link (ember INT NOT NULL,hazassag INT NOT NULL,FOREIGN KEY (ember) REFERENCES Ember(id),FOREIGN KEY (hazassag) REFERENCES Hazassag(id))"
+            "Create Table if not exists Hazassag_link (id SERIAL NOT NULL PRIMARY KEY,ember INT NOT NULL,hazassag INT NOT NULL,FOREIGN KEY (ember) REFERENCES Ember(id),FOREIGN KEY (hazassag) REFERENCES Hazassag(id))"
         );
     }
 }

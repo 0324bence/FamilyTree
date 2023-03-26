@@ -36,6 +36,7 @@ Create Table If not exists Hazassag (
 );
 
 Create Table if not exists Hazassag_link (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     ember INT NOT NULL,
     hazassag INT NOT NULL,
     FOREIGN KEY (ember) REFERENCES Ember(id),
