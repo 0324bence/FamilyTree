@@ -177,19 +177,6 @@
         width: 100%;
         padding: 0.5rem;
     }
-    .button-area {
-        display: grid;
-        place-items: center;
-    }
-    .bft-form-fieldset {
-        gap: 0.2rem;
-    }
-    .myButton.red {
-        background-color: hsl(0, 100%, 25%);
-    }
-    .myButton.red:hover {
-        background-color: hsl(0, 100%, 45%);
-    }
     .big-button {
         flex: 1 0 48%;
     }
