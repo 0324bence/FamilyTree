@@ -127,7 +127,7 @@
                     <select name={"child-" + index} id={"child-" + index} bind:value={children[index]}>
                         <option value="0">Senki</option>
                         {#each data as person}
-                            {#if !children.some(i => person.id == i) || child == person.id}
+                            {#if (!children.some(i => person.id == i) || child == person.id) && person.id != dad && person.id != mom}
                                 <option value={person.id}>{person.vezetek_nev + " " + person.kereszt_nev}</option>
                             {/if}
                         {/each}
